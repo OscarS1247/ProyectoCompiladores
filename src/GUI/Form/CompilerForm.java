@@ -1,4 +1,11 @@
-package GUI.Icons;
+package GUI.Form;
+
+import GeneratedGrammar.GramaticaLexer;
+import PersonalizedGrammar.CustomErrorListener;
+import PersonalizedGrammar.CustomParser;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -6,6 +13,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.*;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
 import java.io.*;
 import java.util.ArrayList;
@@ -77,6 +86,7 @@ public class CompilerForm extends JFrame {
                             while ((linea = reader.readLine()) != null) {
                                 text = text + line_num + "\t" + linea + "\n";
                                 line_num++;
+                                lineNumber++;
                             }
                             codeArea.setText(text);
                         }
@@ -84,6 +94,37 @@ public class CompilerForm extends JFrame {
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
                 }
+            }
+        });
+        testButtom.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String code_to_test = extractCode();
+                System.out.println(code_to_test);
+
+                // Crear un CharStream a partir del código de entrada
+                CharStream input = CharStreams.fromString(code_to_test);
+
+                // Crear el analizador léxico
+                GramaticaLexer lexer = new GramaticaLexer(input);
+                CommonTokenStream tokens = new CommonTokenStream(lexer);
+
+                // Crear el analizador sintáctico personalizado
+                CustomParser parser = new CustomParser(tokens);
+
+                // Asociar el manejador de errores personalizado
+                CustomErrorListener errorListener = new CustomErrorListener();
+                parser.removeErrorListeners();
+                parser.addErrorListener(errorListener);
+
+                //Probar el codigo partiendo desde la funcion pricipal
+                parser.programa();
+
+                // Obtener la lista de errores después del análisis
+                List<String> errores = errorListener.getErrorMessages();
+
+                showErrors(errores);
+
             }
         });
     }
@@ -96,25 +137,63 @@ public class CompilerForm extends JFrame {
             if ("\n".equals(text)) {
                 doc.insertString(start + 1, lineNumber + "\t", null);
                 lineNumber++;
+            } else if ("".equals(text)) {
+                decreaseLineNumber(start);
             }
         } catch (BadLocationException ex) {
             ex.printStackTrace();
         }
     }
 
-    private void showErrors(List<String> errorsSyntactics, List<String> errorsLexicons){
-        java.util.List<String> errors = new ArrayList<>();
-        errors.addAll(errorsLexicons);
-        errors.addAll(errorsSyntactics);
-        String message = "";
+    private void decreaseLineNumber(int offset) {
+        try {
+            Document doc = codeArea.getDocument();
+            int line = codeArea.getLineOfOffset(offset);
+            int lineStart = codeArea.getLineStartOffset(line);
+            int lineEnd = codeArea.getLineEndOffset(line);
+
+            String lineText = doc.getText(lineStart, lineEnd - lineStart);
+            if (lineText.trim().isEmpty()) {
+                doc.remove(lineStart, lineEnd - lineStart);
+                lineNumber--;
+                updateLineNumbers();
+            }
+        } catch (BadLocationException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void updateLineNumbers() {
+        String[] lines = codeArea.getText().split("\n");
+        StringBuilder numberedText = new StringBuilder();
+        for (int i = 0; i < lines.length; i++) {
+            numberedText.append(i + 1).append("\t").append(lines[i]).append("\n");
+        }
+        codeArea.setText(numberedText.toString());
+    }
+
+    private void showErrors(List<String> errors){
+        StringBuilder message = new StringBuilder();
 
         if (!errors.isEmpty()) {
             for (String error : errors) {
-
+                message.append("\n").append(error);
             }
         } else {
-            message = "No errors found.";
+            message = new StringBuilder("No errors found.");
         }
+
+        outputArea.setText(message.toString());
+    }
+
+    private String extractCode() {
+        String code = codeArea.getText();
+        StringBuilder extractedCode = new StringBuilder();
+        String[] lines = code.split("\n");
+        for (String line : lines) {
+            extractedCode.append(line.replaceFirst("\\d+\\s*", "")).append("\n");
+        }
+        return extractedCode.toString();
     }
 
     public static void main(String[] args) {
