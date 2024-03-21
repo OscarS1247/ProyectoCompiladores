@@ -6,7 +6,6 @@ options { caseInsensitive = true; }
 INT_VAR         : [0-9]+ ;
 CHAR_VAR        : ( '\'' [a-z] '\'' | INT_VAR ) ;
 STRING_VAR      : '\'' (~["\r\n] | '\'\'')* '\'' ;
-ARRAY_VAR       : ID '[' INT_VAR ']' ;
 OR              : 'OR' ;
 AND             : 'AND' ;
 VAR             : 'VAR';
@@ -15,15 +14,22 @@ BEGIN           : 'BEGIN';
 WHILE           : 'WHILE' ;
 FOR             : 'FOR';
 IF              : 'IF';
+ELSE            : 'ELSE' ;
+READ            : 'READ' | 'READLN' ;
+WRITE           : 'WRITE' | 'WRITELN' ;
+FUNC            : 'FUNCTION' ;
+PROC            : 'PROCEDURE' ;
 DO              : 'DO';
-STRING_TYPE     : 'string' ;
 PROGRAM_END     : 'END.' ;
-END             : 'END;' ;
+END             : 'END' ;
 TO              : 'TO';
 THEN            : 'THEN';
+RET             : 'RETURN' ;
+STRING_TYPE     : 'string' ;
 INT_TYPE        : 'int' | 'integer' ;
 CHAR_TYPE       : 'char' ;
 BOOL_TYPE       : 'bool' ;
+ARRAY_TYPE      : ID '[' INT_VAR '..' INT_VAR '] of ' ( INT_TYPE | CHAR_TYPE | STRING_TYPE ) ;
 ASSIGN          : ':=' ;
 SEMI            : ';' ;
 EQUAL           : '=' ;
@@ -45,38 +51,61 @@ WS              : [ \n\t]+ -> skip ;
 
 //rules
 
-programa: PROGRAM ID SEMI ( COMM* ( VAR ( init )* )? COMM* ) BEGIN code_block END;
+programa: PROGRAM ID SEMI ( COMM* ( VAR ( init )* )? COMM* ) ( funcs_and_procs SEMI )* BEGIN code_block PROGRAM_END;
 
 code_block: ( row SEMI )* ;
-row: ( assignation | function | while | for | if | COMM ) ;
+structure_code: ( row | ( BEGIN code_block END ) ) ;
+function_code: ( ( row | return ) SEMI ) * ;
+row: ( assignation | read | write | function | procedure | while | for | if | COMM ) ;
+
+// Arrays
+array_id: ID '[' ( ID | INT_VAR ) ']' ;
+array_type: ( 'array of' ( INT_TYPE | CHAR_TYPE | STRING_TYPE ) ) ;
 
 // Manejo de variables
+id: ( ID | array_id ) ;
 init: ID ( ',' ID )* COLON type SEMI ;
-assignation: ( ID ASSIGN ( expr ) ) | ( ARRAY_VAR ASSIGN ( expr ) )  ;
+funcs_and_procs: ( function_def | procedure_def ) ;
+assignation: ( id ASSIGN ( expr | function | STRING_VAR ) ) ;
+return: RET element ;
 
 // Expresiones aritmeticas
-expr: ( ( term ( SUM_OPERATOR term)* ) | ( PARENTHESIS_OP expr PARENTHESIS_CL ) | ( ARRAY_VAR BRACKET_OP expr BRACKET_CL ) ) ;
-term: ( ( var | ID ) ( MULT_OPERATOR term )* ) | ( PARENTHESIS_OP expr PARENTHESIS_CL )  ;
+expr: ( ( term ( SUM_OPERATOR term )* ) | ( PARENTHESIS_OP expr PARENTHESIS_CL ) ) ;
+term: ( int_element ( MULT_OPERATOR term )* ) | ( PARENTHESIS_OP expr PARENTHESIS_CL )  ;
 
 // Expresiones booleanas
 bool_expr: ( ( bool_term ( OR bool_term )* ) | ( PARENTHESIS_OP bool_expr PARENTHESIS_CL ) );
 bool_term: ( ( ID | bool_operation ) ( AND bool_term )* ) | ( PARENTHESIS_OP bool_expr PARENTHESIS_CL ) ;
-bool_operation: ( var | ID | ARRAY_VAR ) COMP_OPERATOR ( var | ID | ARRAY_VAR ) ;
+bool_operation: int_element COMP_OPERATOR int_element ;
 
 // Definiciones
 
     // Defincion de variables y tipo
-var: ( INT_VAR | CHAR_VAR | STRING_VAR | ARRAY_VAR ) ;
-type: ( STRING_TYPE | INT_TYPE | CHAR_TYPE | BOOL_TYPE ) ;
+var: ( INT_VAR | CHAR_VAR | STRING_VAR | array_id ) ;
+type: ( STRING_TYPE | INT_TYPE | CHAR_TYPE | BOOL_TYPE | ARRAY_TYPE ) ;
+params_type: ( array_type | INT_TYPE | CHAR_TYPE | BOOL_TYPE | STRING_TYPE );
+
+int_element: ( INT_VAR | ID | array_id );
+element: ( var | ID | array_id );
 
     // Estructuras
-while: WHILE PARENTHESIS_OP bool_expr PARENTHESIS_CL structure_code ;
-for: FOR ID ASSIGN INT_VAR TO ( ID | INT_VAR ) structure_code ;
-if: IF PARENTHESIS_OP bool_expr PARENTHESIS_CL THEN structure_code ;
+while: WHILE PARENTHESIS_OP bool_expr PARENTHESIS_CL DO structure_code ;
+for: FOR ID ASSIGN INT_VAR TO int_element DO structure_code ;
+if: IF PARENTHESIS_OP bool_expr PARENTHESIS_CL THEN structure_code else? ;
+else: ELSE structure_code ;
 
-structure_code: ( row | ( DO code_block END ) ) ;
+function_def:
+FUNC ID PARENTHESIS_OP ( params )? PARENTHESIS_CL ( COLON type )? SEMI ( VAR ( init )* )?
+BEGIN function_code END;
+function: ID PARENTHESIS_OP ( ID ( COMMA ID )* )? PARENTHESIS_CL ;
 
-function: ID PARENTHESIS_OP ( params )? PARENTHESIS_CL ( COLON type )? SEMI code_block END ;
+procedure_def:
+PROC ID PARENTHESIS_OP ( params )? PARENTHESIS_CL ( COLON type )? SEMI ( VAR ( init )* )?
+BEGIN code_block END;
+procedure: ID PARENTHESIS_OP ( ID ( COMMA ID )* )? PARENTHESIS_CL ;
 
-params: ID ( COMMA ID )* COLON type ;
+read: READ PARENTHESIS_OP ( ID* ) PARENTHESIS_CL ;
+write: WRITE PARENTHESIS_OP ( element ( COMMA element )* ) PARENTHESIS_CL ;
+
+params: ID ( COMMA ID )* COLON params_type ;
 
