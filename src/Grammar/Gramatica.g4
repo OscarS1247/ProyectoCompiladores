@@ -73,7 +73,7 @@ factor: ( PARENTHESIS_OP expr PARENTHESIS_CL ) | int_element ;
 // Expresiones booleanas
 bool_expr: ( bool_term ( OR bool_term )* ) ;
 bool_term: ( bool_factor ( AND bool_factor )* ) ;
-bool_factor: ( bool_operation | bool_operation ) ;
+bool_factor: ( bool_operation | PARENTHESIS_OP bool_operation PARENTHESIS_CL ) ;
 bool_operation: expr COMP_OPERATOR expr ;
 
 // Manejo de variables
@@ -90,8 +90,8 @@ var: ( INT_VAR | CHAR_VAR | STRING_VAR | array_id ) ;
 type: ( STRING_TYPE | INT_TYPE | CHAR_TYPE | BOOL_TYPE | ARRAY_TYPE | D_ARRAY_TYPE ) ;
 params_type: ( array_type | INT_TYPE | CHAR_TYPE | BOOL_TYPE | STRING_TYPE );
 
-int_element: ( INT_VAR | ID | array_id );
-element: ( var | ID | array_id );
+int_element: ( INT_VAR | ID | array_id | function );
+element: ( var | ID | int_element | expr );
 
     // Estructuras
 while: WHILE PARENTHESIS_OP bool_expr PARENTHESIS_CL DO structure_code ;
@@ -103,12 +103,12 @@ else: ELSE structure_code ;
 function_def:
 FUNC ID PARENTHESIS_OP ( params )? PARENTHESIS_CL ( COLON type )? SEMI ( VAR ( init )* )?
 BEGIN function_code END;
-function: ID PARENTHESIS_OP ( ID ( COMMA ID )* )? PARENTHESIS_CL ;
+function: ID PARENTHESIS_OP ( element ( COMMA element )* )? PARENTHESIS_CL ;
 
 procedure_def:
 PROC ID PARENTHESIS_OP ( params )? PARENTHESIS_CL ( COLON type )? SEMI ( VAR ( init )* )?
 BEGIN code_block END;
-procedure: ID PARENTHESIS_OP ( ID ( COMMA ID )* )? PARENTHESIS_CL ;
+procedure: ID PARENTHESIS_OP ( element ( COMMA element )* )? PARENTHESIS_CL ;
     // Funciones de read y de write
 read: READ PARENTHESIS_OP ( ID* ) PARENTHESIS_CL ;
 write: WRITE PARENTHESIS_OP ( element ( COMMA element )* ) PARENTHESIS_CL ;
