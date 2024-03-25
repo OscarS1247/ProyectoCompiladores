@@ -9,8 +9,4 @@ public class CustomParser extends GramaticaParser {
         super(input);
     }
 
-    @Override
-    protected void sync(Parser recognizer) {
-
-    }
 }
