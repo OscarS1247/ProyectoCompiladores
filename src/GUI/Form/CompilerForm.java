@@ -1,6 +1,7 @@
 package GUI.Form;
 
 import GeneratedGrammar.GramaticaLexer;
+import GeneratedGrammar.GramaticaParser;
 import PersonalizedGrammar.CustomErrorListener;
 import PersonalizedGrammar.CustomParser;
 import org.antlr.v4.runtime.CharStream;
@@ -34,7 +35,7 @@ public class CompilerForm extends JFrame {
     CompilerForm() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        ImageIcon icon_pascal = new ImageIcon("C:\\Users\\bernardo08\\IdeaProjects\\ProyectoCompiladores_Oscar\\src\\GUI\\Icons\\pascal_logo.png");
+        ImageIcon icon_pascal = new ImageIcon("C:\\Users\\carlo\\IdeaProjects\\ProyectoCompiladores_Oscar\\src\\GUI\\Icons\\pascal_logo.png");
 
         setTitle("PASCAL - COMPILER");
         setSize((int) ((screenSize.width - (screenSize.width * 0.10))), (int) ((screenSize.height - (screenSize.height * 0.20))));
@@ -110,14 +111,14 @@ public class CompilerForm extends JFrame {
                 CommonTokenStream tokens = new CommonTokenStream(lexer);
 
                 // Crear el analizador sintáctico personalizado
-                CustomParser parser = new CustomParser(tokens);
+                GramaticaParser parser = new GramaticaParser(tokens);
 
                 // Asociar el manejador de errores personalizado
                 CustomErrorListener errorListener = new CustomErrorListener();
                 parser.removeErrorListeners();
                 parser.addErrorListener(errorListener);
 
-                //Probar el codigo partiendo desde la funcion pricipal
+                // Probar el codigo partiendo desde la funcion pricipal
                 parser.programa();
 
                 // Obtener la lista de errores después del análisis
@@ -191,7 +192,7 @@ public class CompilerForm extends JFrame {
         StringBuilder extractedCode = new StringBuilder();
         String[] lines = code.split("\n");
         for (String line : lines) {
-            extractedCode.append(line.replaceFirst("\\d+\\s*", "")).append("\n");
+            extractedCode.append(line.replaceFirst("\\d+\\t", "")).append("\n");
         }
         return extractedCode.toString();
     }

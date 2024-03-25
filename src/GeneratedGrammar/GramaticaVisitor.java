@@ -1,4 +1,4 @@
-// Generated from C:/Users/bernardo08/IdeaProjects/ProyectoCompiladores_Oscar/src/Grammar/Gramatica.g4 by ANTLR 4.13.1
+// Generated from C:/Users/carlo/Documents/GitHub/ProyectoCompiladores/src/Grammar/Gramatica.g4 by ANTLR 4.13.1
 package GeneratedGrammar;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -23,23 +23,35 @@ public interface GramaticaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCode_block(GramaticaParser.Code_blockContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#structure_code}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStructure_code(GramaticaParser.Structure_codeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#function_code}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunction_code(GramaticaParser.Function_codeContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link GramaticaParser#row}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitRow(GramaticaParser.RowContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GramaticaParser#init}.
+	 * Visit a parse tree produced by {@link GramaticaParser#array_id}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitInit(GramaticaParser.InitContext ctx);
+	T visitArray_id(GramaticaParser.Array_idContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GramaticaParser#assignation}.
+	 * Visit a parse tree produced by {@link GramaticaParser#array_type}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAssignation(GramaticaParser.AssignationContext ctx);
+	T visitArray_type(GramaticaParser.Array_typeContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link GramaticaParser#expr}.
 	 * @param ctx the parse tree
@@ -65,11 +77,47 @@ public interface GramaticaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBool_term(GramaticaParser.Bool_termContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#bool_factor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBool_factor(GramaticaParser.Bool_factorContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link GramaticaParser#bool_operation}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitBool_operation(GramaticaParser.Bool_operationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#id}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitId(GramaticaParser.IdContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#init}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInit(GramaticaParser.InitContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#funcs_and_procs}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFuncs_and_procs(GramaticaParser.Funcs_and_procsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#assignation}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssignation(GramaticaParser.AssignationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#return}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReturn(GramaticaParser.ReturnContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link GramaticaParser#var}.
 	 * @param ctx the parse tree
@@ -82,6 +130,24 @@ public interface GramaticaVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitType(GramaticaParser.TypeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#params_type}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParams_type(GramaticaParser.Params_typeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#int_element}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInt_element(GramaticaParser.Int_elementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#element}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElement(GramaticaParser.ElementContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link GramaticaParser#while}.
 	 * @param ctx the parse tree
@@ -101,17 +167,47 @@ public interface GramaticaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIf(GramaticaParser.IfContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GramaticaParser#structure_code}.
+	 * Visit a parse tree produced by {@link GramaticaParser#else}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitStructure_code(GramaticaParser.Structure_codeContext ctx);
+	T visitElse(GramaticaParser.ElseContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#function_def}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunction_def(GramaticaParser.Function_defContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link GramaticaParser#function}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitFunction(GramaticaParser.FunctionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#procedure_def}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProcedure_def(GramaticaParser.Procedure_defContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#procedure}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProcedure(GramaticaParser.ProcedureContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#read}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRead(GramaticaParser.ReadContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#write}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWrite(GramaticaParser.WriteContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link GramaticaParser#params}.
 	 * @param ctx the parse tree
