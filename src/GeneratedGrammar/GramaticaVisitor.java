@@ -65,6 +65,12 @@ public interface GramaticaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitTerm(GramaticaParser.TermContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#factor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFactor(GramaticaParser.FactorContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link GramaticaParser#bool_expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
