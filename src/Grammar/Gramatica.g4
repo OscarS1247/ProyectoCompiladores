@@ -32,7 +32,6 @@ BOOL_TYPE       : 'bool' ;
 ARRAY_TYPE      : ID '[' INT_VAR '..' INT_VAR '] of ' ( INT_TYPE | CHAR_TYPE | STRING_TYPE ) ;
 ASSIGN          : ':=' ;
 SEMI            : ';' ;
-EQUAL           : '=' ;
 COLON           : ':' ;
 COMMA           : ',';
 PARENTHESIS_OP  : '(';
@@ -62,21 +61,23 @@ row: ( assignation | read | write | function | procedure | while | for | if | CO
 array_id: ID '[' ( ID | INT_VAR ) ']' ;
 array_type: ( 'array of' ( INT_TYPE | CHAR_TYPE | STRING_TYPE ) ) ;
 
+
+// Expresiones aritmeticas
+expr: ( ( term ( SUM_OPERATOR term )* ) ) ;
+term: ( int_element ( MULT_OPERATOR term )* ) | ( PARENTHESIS_OP expr PARENTHESIS_CL )  ;
+
+// Expresiones booleanas
+bool_expr: ( bool_term ( OR bool_term )* ) ;
+bool_term: ( bool_factor ( AND bool_factor )* ) ;
+bool_factor: ( bool_operation | bool_operation ) ;
+bool_operation: int_element COMP_OPERATOR int_element ;
+
 // Manejo de variables
 id: ( ID | array_id ) ;
 init: ID ( ',' ID )* COLON type SEMI ;
 funcs_and_procs: ( function_def | procedure_def ) ;
 assignation: ( id ASSIGN ( expr | function | STRING_VAR ) ) ;
 return: RET element ;
-
-// Expresiones aritmeticas
-expr: ( ( term ( SUM_OPERATOR term )* ) | ( PARENTHESIS_OP expr PARENTHESIS_CL ) ) ;
-term: ( int_element ( MULT_OPERATOR term )* ) | ( PARENTHESIS_OP expr PARENTHESIS_CL )  ;
-
-// Expresiones booleanas
-bool_expr: ( ( bool_term ( OR bool_term )* ) | ( PARENTHESIS_OP bool_expr PARENTHESIS_CL ) );
-bool_term: ( ( ID | bool_operation ) ( AND bool_term )* ) | ( PARENTHESIS_OP bool_expr PARENTHESIS_CL ) ;
-bool_operation: int_element COMP_OPERATOR int_element ;
 
 // Definiciones
 
@@ -91,7 +92,7 @@ element: ( var | ID | array_id );
     // Estructuras
 while: WHILE PARENTHESIS_OP bool_expr PARENTHESIS_CL DO structure_code ;
 for: FOR ID ASSIGN INT_VAR TO int_element DO structure_code ;
-if: IF PARENTHESIS_OP bool_expr PARENTHESIS_CL THEN structure_code else? ;
+if: IF bool_expr THEN structure_code else? ;
 else: ELSE structure_code ;
 
 function_def:
