@@ -4,9 +4,11 @@ import GeneratedGrammar.GramaticaLexer;
 import GeneratedGrammar.GramaticaParser;
 import PersonalizedGrammar.CustomErrorListener;
 import PersonalizedGrammar.CustomParser;
+import org.antlr.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.Parser;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -113,13 +115,16 @@ public class CompilerForm extends JFrame {
                 // Crear el analizador sintáctico personalizado
                 GramaticaParser parser = new GramaticaParser(tokens);
 
+
                 // Asociar el manejador de errores personalizado
                 CustomErrorListener errorListener = new CustomErrorListener();
                 parser.removeErrorListeners();
                 parser.addErrorListener(errorListener);
 
                 // Probar el codigo partiendo desde la funcion pricipal
-                parser.programa();
+                GramaticaParser.ProgramaContext contexto = parser.programa();
+                System.out.println("Imprimiendo un arbol??? creo");
+                System.out.println(contexto.toStringTree(parser));
 
                 // Obtener la lista de errores después del análisis
                 List<String> errores = errorListener.getErrorMessages();
